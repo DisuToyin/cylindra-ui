@@ -1,29 +1,50 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // @mui
-import { Link, Stack, IconButton, InputAdornment, TextField, Checkbox } from '@mui/material';
+import { Link, Stack, IconButton, InputAdornment, TextField } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import Iconify from '../../../components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function LoginForm() {
+export default function LoginForm({
+  setFirstName,
+  setLastName,
+  setEmail,
+  setPassword,
+  handleAuth,
+  authLoading,
+  showMoreFields = false,
+}) {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleClick = () => {
-    navigate('/dashboard', { replace: true });
-  };
-
   return (
     <>
       <Stack spacing={3}>
-        <TextField name="email" label="Email address" />
+        {showMoreFields && (
+          <div style={{ display: 'flex', gap: 8, justifyContent: 'space-between' }}>
+            <TextField
+              onChange={(e) => setFirstName(e.target.value)}
+              style={{ width: '-webkit-fill-available' }}
+              name="first name"
+              label="First Name"
+            />
+            <TextField
+              onChange={(e) => setLastName(e.target.value)}
+              style={{ width: '-webkit-fill-available' }}
+              name="last name"
+              label="Last Name"
+            />{' '}
+          </div>
+        )}
+        <TextField onChange={(e) => setEmail(e.target.value)} name="email" label="Email address" />
 
         <TextField
           name="password"
+          onChange={(e) => setPassword(e.target.value)}
           label="Password"
           type={showPassword ? 'text' : 'password'}
           InputProps={{
@@ -39,14 +60,22 @@ export default function LoginForm() {
       </Stack>
 
       <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
-        <Checkbox name="remember" label="Remember me" />
-        <Link variant="subtitle2" underline="hover">
-          Forgot password?
-        </Link>
+        {!showMoreFields && (
+          <Link variant="subtitle2" underline="hover">
+            Forgot password?
+          </Link>
+        )}
       </Stack>
 
-      <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={handleClick}>
-        Login
+      <LoadingButton
+        disabled={authLoading}
+        fullWidth
+        size="large"
+        type="submit"
+        variant="contained"
+        onClick={handleAuth}
+      >
+        {showMoreFields ? (authLoading ? `Loading` : `Register`) : authLoading ? `Loading` : `Login`}
       </LoadingButton>
     </>
   );

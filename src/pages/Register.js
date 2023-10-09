@@ -1,9 +1,9 @@
-import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import React, { useState, useRef } from 'react';
 // @mui
 import { styled } from '@mui/material/styles';
-import { Link, Container, Typography, Divider, Stack, Button, Alert, Snackbar } from '@mui/material';
+import { Link, Container, Typography, Alert, Stack, Button, Snackbar } from '@mui/material';
 // hooks
 import useResponsive from '../hooks/useResponsive';
 // components
@@ -12,7 +12,6 @@ import Iconify from '../components/iconify';
 // sections
 import { LoginForm } from '../sections/auth/login';
 import axios from '../api/axios';
-import useAuth from '../hooks/useAuth';
 
 // ----------------------------------------------------------------------
 
@@ -42,15 +41,15 @@ const StyledContent = styled('div')(({ theme }) => ({
   padding: theme.spacing(12, 0),
 }));
 
-// ----------------------------------------------------------------------
-
 export default function LoginPage() {
-  const { setAuth } = useAuth();
-  const res = useAuth();
   const navigate = useNavigate();
-
   const mdUp = useResponsive('up', 'md');
 
+  const userRef = useRef();
+  const errRef = useRef();
+
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -60,9 +59,13 @@ export default function LoginPage() {
   const [alertMessage, setAlertMessage] = useState('Success');
   const [result, setResult] = useState('success');
 
-  const handleLogin = async () => {
+  // const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
+  // const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
+
+  const handleSignup = async () => {
     setAuthLoading(true);
     const payload = {
+      name: `${firstName} ${lastName}`,
       email,
       password,
     };
@@ -70,17 +73,16 @@ export default function LoginPage() {
     console.log({ payload });
 
     try {
-      const { data } = await axios.post('/api/user/login', payload);
+      const { data } = await axios.post('/api/user/signup', payload);
       console.log({ data: data?.data, success: data?.success });
-      setAuth(data?.data);
       setOpenSB(true);
-      setAlertMessage('Login Successful!');
+      setAlertMessage('Sign Up Successful!');
       setResult('success');
       navigate('/dashboard', { replace: true });
     } catch (error) {
       console.log(error);
       setOpenSB(true);
-      setAlertMessage('Login Failed!');
+      setAlertMessage('Sign Up Failed!');
       setResult('error');
     } finally {
       setAuthLoading(false);
@@ -90,9 +92,8 @@ export default function LoginPage() {
   return (
     <>
       <Helmet>
-        <title> Login | Cylindra UI </title>
+        <title> Register | Cylindra UI </title>
       </Helmet>
-
       <Snackbar
         open={openSB}
         autoHideDuration={6000}
@@ -123,20 +124,23 @@ export default function LoginPage() {
         <Container maxWidth="sm">
           <StyledContent>
             <Typography variant="h4" gutterBottom>
-              Sign in to Cylindra
+              Sign up to Cylindra
             </Typography>
 
             <Typography variant="body2" sx={{ mb: 5 }}>
-              Don’t have an account? {''}
-              <Link href="register" variant="subtitle2">
-                Get started
+              Already have an account? {''}
+              <Link style={{ cursor: 'pointer' }} href="/login" variant="subtitle2">
+                Sign in
               </Link>
             </Typography>
 
             <LoginForm
+              showMoreFields
+              setFirstName={setFirstName}
               setPassword={setPassword}
+              setLastName={setLastName}
               setEmail={setEmail}
-              handleAuth={handleLogin}
+              handleAuth={handleSignup}
               authLoading={authLoading}
             />
           </StyledContent>
