@@ -70,7 +70,10 @@ export default function LoginPage() {
     console.log({ payload });
 
     try {
-      const { data } = await axios.post('/api/user/login', payload);
+      const { data } = await axios.post('/api/user/login', payload, {
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: true,
+      });
       console.log({ data: data?.data, success: data?.success });
       setAuth(data?.data);
       setOpenSB(true);
