@@ -1,3 +1,6 @@
+import { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+
 import { Helmet } from 'react-helmet-async';
 import { faker } from '@faker-js/faker';
 // @mui
@@ -9,21 +12,50 @@ import Iconify from '../components/iconify';
 import { AppOrderTimeline, AppWebsiteVisits, AppWidgetSummary } from '../sections/@dashboard/app';
 // ----------------------------------------------------------------------
 import useRefreshToken from '../hooks/useRefreshToken';
-import axios from '../api/axios';
+import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import useAuth from '../hooks/useAuth';
 
 export default function DashboardAppPage() {
   const theme = useTheme();
+  const navigate = useNavigate();
+  const location = useLocation();
   const refresh = useRefreshToken();
+  const axiosPrivate = useAxiosPrivate();
   const { auth } = useAuth();
   console.log(auth);
+
+  const [dashboardData, setDashboardData] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    const controller = new AbortController();
+
+    const getDashboardData = async () => {
+      try {
+        const { data } = await axiosPrivate.get('/api/dashboard', {
+          signal: controller.signal,
+        });
+        console.log({ web: data });
+        if (isMounted) setDashboardData(data);
+      } catch (err) {
+        console.error(err);
+        // navigate('/login', { state: { from: location }, replace: true });
+      }
+    };
+
+    getDashboardData();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
+  }, []);
 
   return (
     <>
       <Helmet>
-        <title> Dashboard | Minimal UI </title>
+        <title> Dashboard | Cylindra UI </title>
       </Helmet>
-      <button onClick={() => refresh()}>Refresh</button>
 
       <Container maxWidth="xl">
         <Typography variant="h4" sx={{ mb: 5 }}>
@@ -36,7 +68,7 @@ export default function DashboardAppPage() {
               style={{ cursor: 'pointer' }}
               title="Total Checks"
               color="info"
-              total={30}
+              total={dashboardData?.data?.sites_total || 0}
               icon={'ant-design:android-filled'}
             />
           </Grid>
@@ -45,7 +77,7 @@ export default function DashboardAppPage() {
             <AppWidgetSummary
               style={{ cursor: 'pointer' }}
               title="Up"
-              total={26}
+              total={dashboardData?.data?.sites_up || 0}
               color="success"
               icon={'ant-design:apple-filled'}
             />
@@ -55,7 +87,7 @@ export default function DashboardAppPage() {
             <AppWidgetSummary
               style={{ cursor: 'pointer' }}
               title="Down"
-              total={5}
+              total={dashboardData?.data?.sites_down || 0}
               color="error"
               icon={'ant-design:windows-filled'}
             />
@@ -65,7 +97,7 @@ export default function DashboardAppPage() {
             <AppWidgetSummary
               style={{ cursor: 'pointer' }}
               title="Paused"
-              total={4}
+              total={0}
               color="warning"
               icon={'ant-design:bug-filled'}
             />
@@ -114,17 +146,11 @@ export default function DashboardAppPage() {
           <Grid item xs={12} md={6} lg={4}>
             <AppOrderTimeline
               title="Event Timeline"
-              list={[...Array(5)].map((_, index) => ({
-                id: faker.datatype.uuid(),
-                title: [
-                  '1983, orders, $4220',
-                  '12 Invoices have been paid',
-                  'Order #37745 from September',
-                  'New order placed #XF-2356',
-                  'New order placed #XF-2346',
-                ][index],
+              list={dashboardData?.data?.events_timeline?.map((_, index) => ({
+                id: _?.id,
+                title: `${_?.web_id?.link}'s is ${_?.event_type}`,
                 type: `order${index + 1}`,
-                time: faker.date.past(),
+                time: _?.createdAt,
               }))}
             />
           </Grid>

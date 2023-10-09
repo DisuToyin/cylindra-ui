@@ -23,6 +23,10 @@ export default function RouterPage() {
 
   const protected_ = [
     {
+      path: 'login',
+      element: <LoginPage />,
+    },
+    {
       path: '/dashboard',
       element: <DashboardLayout />,
       children: [

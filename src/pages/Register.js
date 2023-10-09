@@ -73,7 +73,10 @@ export default function LoginPage() {
     console.log({ payload });
 
     try {
-      const { data } = await axios.post('/api/user/signup', payload);
+      const { data } = await axios.post('/api/user/signup', payload, {
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: true,
+      });
       console.log({ data: data?.data, success: data?.success });
       setOpenSB(true);
       setAlertMessage('Sign Up Successful!');
