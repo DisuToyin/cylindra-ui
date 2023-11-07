@@ -19,7 +19,7 @@ import useAuth from './hooks/useAuth';
 
 export default function RouterPage() {
   const { auth } = useAuth();
-  console.log({ routes: auth });
+  // console.log({ routes: auth });
 
   const protected_ = [
     {
@@ -43,14 +43,14 @@ export default function RouterPage() {
       element: <SimpleLayout />,
       children: [
         { element: <Navigate to="/dashboard/app" />, index: true },
-        { path: '404', element: <Page404 /> },
-        { path: '*', element: <Navigate to="/404" /> },
+        // { path: '404', element: <Page404 /> },
+        // { path: '*', element: <Navigate to="/404" /> },
       ],
     },
-    {
-      path: '*',
-      element: <Navigate to="/404" replace />,
-    },
+    // {
+    //   path: '*',
+    //   element: <Navigate to="/404" replace />,
+    // },
   ];
 
   const general = [

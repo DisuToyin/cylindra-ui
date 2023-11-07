@@ -16,6 +16,26 @@ const navConfig = [
     path: '/dashboard/checks',
     icon: icon('ic_user'),
   },
+  {
+    title: 'manage-team',
+    path: '/dashboard/team',
+    icon: icon('ic_analytics'),
+  },
+  {
+    title: 'profile',
+    path: '/dashboard/profile',
+    icon: icon('ic_user'),
+  },
+  {
+    title: 'status',
+    path: '/dashboard/status',
+    icon: icon('ic_user'),
+  },
+  {
+    title: 'settings',
+    path: '/dashboard/settings',
+    icon: icon('ic_analytics'),
+  },
   // {
   //   title: 'team',
   //   path: '/dashboard/user',

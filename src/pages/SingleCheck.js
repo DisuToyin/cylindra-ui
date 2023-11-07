@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { faker } from '@faker-js/faker';
 // @mui
 import {
@@ -33,13 +33,24 @@ import Scrollbar from '../components/scrollbar';
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 
 export default function SingleCheck() {
+  const location = useLocation();
+  console.log(location);
+  const [siteDetails, setSiteDetails] = useState(null);
+
+  useEffect(() => {
+    if (location?.state !== null) {
+      setSiteDetails(location?.state?.siteData);
+    } else {
+      // make api request
+    }
+  }, []);
   return (
     <Container>
       <section style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem' }}>
         {' '}
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           <Typography variant="h4" gutterBottom>
-            amazon.co.uk
+            {siteDetails?.link}
           </Typography>
           <Label color={'error'}>Down</Label>
         </div>

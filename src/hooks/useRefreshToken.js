@@ -9,16 +9,16 @@ const useRefreshToken = () => {
       withCredentials: true,
     });
 
-    console.log(data?.data?.token);
+    // console.log(data?.data?.token);
 
     setAuth((prev) => {
-      console.log(prev);
-      console.log(data?.data?.token);
+      // console.log(prev);
+      // console.log(data?.data?.token);
       return { ...prev, token: data?.data?.token };
     });
     return data;
   };
-  console.log(auth);
+  // console.log(auth);
   return refresh;
 };
 
